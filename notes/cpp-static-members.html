@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>C++ 類別與靜態成員函式｜程式設計學習資料庫</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="../index.html" class="site-title">程式設計學習資料庫</a>
+      <span class="site-subtitle">系統化整理程式語言、演算法與開發實務筆記</span>
+    </div>
+  </header>
+
+  <main class="note-container">
+    <a href="../index.html" class="back-link">← 返回筆記總覽</a>
+
+    <!-- 區塊 1：標題資訊區 -->
+    <header class="note-header">
+      <div class="note-meta-row">
+        <span class="badge badge-cpp">C++</span>
+        <time datetime="2026-11-15">最後更新：2026-11-15</time>
+      </div>
+      <h1>C++ 類別與靜態成員函式</h1>
+      <p class="note-summary">
+        理解 static 資料成員與靜態成員函式的共享機制、記憶體特性，以及不透過物件直接呼叫的正確語法。
+      </p>
+    </header>
+
+    <!-- 區塊 2：觀念說明區 -->
+    <section id="concept" class="note-section">
+      <h2>1. 核心觀念說明</h2>
+      <p>
+        在 C++ 物件導向程式設計中，一般的成員變數與成員函式都隸屬於「個別物件」；但加上 <code>static</code> 關鍵字後，該成員就會變成<strong>整個類別（Class）共用</strong>：
+      </p>
+      <ul>
+        <li><strong>靜態資料成員（Static Data Member）</strong>：所有由同一個類別建立出來的物件，都共享同一份靜態變數記憶體。常用於統計「目前已建立多少個物件」或儲存全體共用的設定值。</li>
+        <li><strong>靜態成員函式（Static Member Function）</strong>：屬於類別本身而非單一物件，因此<strong>沒有 <code>this</code> 指標</strong>，即使尚未建立任何物件，也能透過 <code>類別名稱::函式名稱()</code> 直接呼叫。</li>
+        <li><strong>存取限制</strong>：靜態成員函式內部只能直接存取其他 <code>static</code> 成員，無法直接存取非靜態（屬於個別物件）的成員變數或函式。</li>
+      </ul>
+    </section>
+
+    <!-- 區塊 3：程式碼範例區 -->
+    <section id="example" class="note-section">
+      <h2>2. 程式碼範例與解說</h2>
+      <p>以下透過視窗類別 <code>CWin</code> 示範如何用靜態變數累計物件數量，並用靜態成員函式找出面積最大的視窗：</p>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-lang-group">
+            <div class="window-dots" aria-hidden="true">
+              <span></span><span></span><span></span>
+            </div>
+            <span>C++</span>
+          </div>
+          <button type="button" class="copy-btn">複製程式碼</button>
+        </div>
+        <pre><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+using namespace std;
+
+class CWin {
+private:
+    string id;
+    int width;
+    int height;
+    static int count; // 宣告靜態資料成員（記錄物件總數）
+
+public:
+    CWin(string i = "Default", int w = 10, int h = 10) : id(i), width(w), height(h) {
+        count++; // 每建立一個物件，共用計數器加 1
+    }
+
+    int area() const {
+        return width * height;
+    }
+
+    string getId() const {
+        return id;
+    }
+
+    // 靜態成員函式：回傳目前建立的物件總數
+    static int getCount() {
+        return count;
+    }
+
+    // 靜態成員函式：比較物件陣列中面積最大者
+    static CWin largest(CWin arr[], int size) {
+        CWin maxWin = arr[0];
+        for (int i = 1; i &lt; size; i++) {
+            if (arr[i].area() &gt; maxWin.area()) {
+                maxWin = arr[i];
+            }
+        }
+        return maxWin;
+    }
+};
+
+// 必須在類別外部進行靜態資料成員的定義與初始化
+int CWin::count = 0;
+
+int main() {
+    // 尚未建立任何物件前，即可直接透過類別名稱呼叫靜態函式
+    cout &lt;&lt; "初始視窗數量: " &lt;&lt; CWin::getCount() &lt;&lt; endl;
+
+    CWin winArr[3] = {
+        CWin("A", 50, 40),
+        CWin("B", 80, 60),
+        CWin("C", 30, 90)
+    };
+
+    cout &lt;&lt; "建立後視窗數量: " &lt;&lt; CWin::getCount() &lt;&lt; endl;
+
+    // 呼叫靜態成員函式找出最大視窗
+    CWin best = CWin::largest(winArr, 3);
+    cout &lt;&lt; "面積最大的視窗為: " &lt;&lt; best.getId()
+         &lt;&lt; " (面積 = " &lt;&lt; best.area() &lt;&lt; ")" &lt;&lt; endl;
+
+    return 0;
+}</code></pre>
+      </div>
+
+      <ul>
+        <li><strong>類別外初始化</strong>：<code>int CWin::count = 0;</code> 負責為靜態成員分配實際記憶體空間，宣告與定義必須分開。</li>
+        <li><strong>呼叫方式</strong>：<code>CWin::getCount()</code> 與 <code>CWin::largest(winArr, 3)</code> 皆使用範圍解析運算子 <code>::</code> 直接從類別呼叫，語意最清楚。</li>
+      </ul>
+    </section>
+
+    <!-- 區塊 4：常見錯誤與注意事項 -->
+    <section id="pitfalls" class="note-section">
+      <h2>3. 常見錯誤與注意事項</h2>
+      <div class="callout-warning">
+        <span class="callout-warning-title">⚠️ 除錯與語法提醒</span>
+        <ul>
+          <li><strong>忘記在類別外定義 <code>static</code> 變數</strong>：只在 <code>class</code> 內寫 <code>static int count;</code> 而未在外部寫 <code>int CWin::count = 0;</code>，編譯時會出現 <code>undefined reference to CWin::count</code> 連結錯誤。</li>
+          <li><strong>在 <code>static</code> 函式中直接存取非靜態成員</strong>：例如在 <code>getCount()</code> 中直接寫 <code>return width;</code> 會編譯失敗，因為靜態函式不知道你要讀取哪一個物件的 <code>width</code>。</li>
+          <li><strong>傳入陣列時發生越界（Out-of-Bounds）</strong>：呼叫 <code>CWin::largest(winArr, 3)</code> 時，第二個參數必須傳入陣列的實際元素個數（<code>3</code>），若誤傳超過陣列長度的數字會讀取到未定義的記憶體。</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    © 2026 程式設計學習資料庫
+  </footer>
+
+  <script src="../assets/main.js"></script>
+</body>
+</html>

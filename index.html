@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>程式設計學習資料庫</title>
+  <link rel="stylesheet" href="./assets/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="./index.html" class="site-title">程式設計學習資料庫</a>
+      <span class="site-subtitle">系統化整理程式語言、演算法與開發實務筆記</span>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="controls-section" aria-label="搜尋與分類篩選">
+      <input
+        type="search"
+        id="search-input"
+        class="search-box"
+        placeholder="搜尋筆記標題、關鍵字或觀念（例如：static、生成式、DOM、二分搜尋、JOIN）..."
+      />
+      <div class="filter-bar">
+        <button type="button" class="filter-btn active" data-filter="all">全部筆記</button>
+        <button type="button" class="filter-btn" data-filter="C++">C++</button>
+        <button type="button" class="filter-btn" data-filter="Python">Python</button>
+        <button type="button" class="filter-btn" data-filter="Web開發 (HTML/CSS/JS)">Web開發 (HTML/CSS/JS)</button>
+        <button type="button" class="filter-btn" data-filter="資料結構與演算法">資料結構與演算法</button>
+        <button type="button" class="filter-btn" data-filter="資料庫">資料庫</button>
+      </div>
+    </section>
+
+    <section id="notes-grid" class="notes-grid" aria-label="筆記列表">
+      <!-- 卡片 1：C++ -->
+      <article class="note-card" data-category="C++">
+        <div>
+          <div class="card-meta">
+            <span class="badge badge-cpp">C++</span>
+            <time datetime="2026-11-15">2026-11-15</time>
+          </div>
+          <h2 class="card-title">
+            <a href="./notes/cpp-static-members.html">C++ 類別與靜態成員函式</a>
+          </h2>
+          <p class="card-summary">
+            理解 static 資料成員與靜態成員函式的共享機制、記憶體特性，以及不透過物件直接呼叫的正確語法。
+          </p>
+        </div>
+        <a href="./notes/cpp-static-members.html" class="card-link">閱讀完整筆記 →</a>
+      </article>
+
+      <!-- 卡片 2：Python -->
+      <article class="note-card" data-category="Python">
+        <div>
+          <div class="card-meta">
+            <span class="badge badge-python">Python</span>
+            <time datetime="2026-11-16">2026-11-16</time>
+          </div>
+          <h2 class="card-title">
+            <a href="./notes/python-list-comprehension.html">Python 串列生成式與常用容器操作</a>
+          </h2>
+          <p class="card-summary">
+            掌握 list、set 與 dict 的核心差異，並運用簡潔的生成式（Comprehension）語法高效率完成資料篩選與轉換。
+          </p>
+        </div>
+        <a href="./notes/python-list-comprehension.html" class="card-link">閱讀完整筆記 →</a>
+      </article>
+
+      <!-- 卡片 3：Web開發 (HTML/CSS/JS) -->
+      <article class="note-card" data-category="Web開發 (HTML/CSS/JS)">
+        <div>
+          <div class="card-meta">
+            <span class="badge badge-web">Web開發 (HTML/CSS/JS)</span>
+            <time datetime="2026-11-16">2026-11-16</time>
+          </div>
+          <h2 class="card-title">
+            <a href="./notes/web-dom-event-handling.html">JavaScript DOM 操作與事件監聽基礎</a>
+          </h2>
+          <p class="card-summary">
+            透過 querySelector 與 addEventListener 綁定使用者互動事件，安全地動態更新網頁文字與 CSS 樣式狀態。
+          </p>
+        </div>
+        <a href="./notes/web-dom-event-handling.html" class="card-link">閱讀完整筆記 →</a>
+      </article>
+
+      <!-- 卡片 4：資料結構與演算法 -->
+      <article class="note-card" data-category="資料結構與演算法">
+        <div>
+          <div class="card-meta">
+            <span class="badge badge-dsa">資料結構與演算法</span>
+            <time datetime="2026-11-16">2026-11-16</time>
+          </div>
+          <h2 class="card-title">
+            <a href="./notes/dsa-binary-search.html">二分搜尋法（Binary Search）原理與實作</a>
+          </h2>
+          <p class="card-summary">
+            理解 O(log n) 時間複雜度優勢，掌握在已排序陣列中利用左右雙指標縮小搜尋範圍的實作與邊界條件。
+          </p>
+        </div>
+        <a href="./notes/dsa-binary-search.html" class="card-link">閱讀完整筆記 →</a>
+      </article>
+
+      <!-- 卡片 5：資料庫 -->
+      <article class="note-card" data-category="資料庫">
+        <div>
+          <div class="card-meta">
+            <span class="badge badge-db">資料庫</span>
+            <time datetime="2026-11-16">2026-11-16</time>
+          </div>
+          <h2 class="card-title">
+            <a href="./notes/db-sql-join-basics.html">SQL 關聯查詢（INNER JOIN 與 LEFT JOIN）實務</a>
+          </h2>
+          <p class="card-summary">
+            透過資料表關聯範例比較交集查詢與左外部聯結的差異，學會正確處理 NULL 值與避免資料列倍增。
+          </p>
+        </div>
+        <a href="./notes/db-sql-join-basics.html" class="card-link">閱讀完整筆記 →</a>
+      </article>
+    </section>
+
+    <div id="empty-state" class="empty-state">
+      找不到符合條件的筆記，請嘗試切換其他分類或清除搜尋關鍵字。
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    © 2026 程式設計學習資料庫
+  </footer>
+
+  <script src="./assets/main.js"></script>
+</body>
+</html>

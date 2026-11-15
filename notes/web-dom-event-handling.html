@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JavaScript DOM 操作與事件監聽基礎｜程式設計學習資料庫</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="../index.html" class="site-title">程式設計學習資料庫</a>
+      <span class="site-subtitle">系統化整理程式語言、演算法與開發實務筆記</span>
+    </div>
+  </header>
+
+  <main class="note-container">
+    <a href="../index.html" class="back-link">← 返回筆記總覽</a>
+
+    <!-- 區塊 1：標題資訊區 -->
+    <header class="note-header">
+      <div class="note-meta-row">
+        <span class="badge badge-web">Web開發 (HTML/CSS/JS)</span>
+        <time datetime="2026-11-16">最後更新：2026-11-16</time>
+      </div>
+      <h1>JavaScript DOM 操作與事件監聽基礎</h1>
+      <p class="note-summary">
+        透過 querySelector 與 addEventListener 綁定使用者互動事件，安全地動態更新網頁文字與 CSS 樣式狀態。
+      </p>
+    </header>
+
+    <!-- 區塊 2：觀念說明區 -->
+    <section id="concept" class="note-section">
+      <h2>1. 核心觀念說明</h2>
+      <p>
+        瀏覽器載入 HTML 後，會將整個網頁文件轉換成樹狀結構的物件模型，稱為 <strong>DOM（Document Object Model）</strong>。JavaScript 透過操作 DOM 節點來讓靜態網頁具備互動能力：
+      </p>
+      <ul>
+        <li><strong>選取元素</strong>：使用 <code>document.querySelector("CSS選擇器")</code> 取得第一個符合條件的 DOM 元素；若需選取多個元素則使用 <code>document.querySelectorAll()</code>。</li>
+        <li><strong>事件監聽（Event Listener）</strong>：透過 <code>element.addEventListener("事件名稱", 回呼函式)</code> 監聽點擊（<code>click</code>）、輸入（<code>input</code>）或表單送出（<code>submit</code>），將結構（HTML）與行為（JS）分離。</li>
+        <li><strong>動態修改內容與樣式</strong>：優先使用 <code>textContent</code> 更新純文字，並透過 <code>element.classList.toggle("class名稱")</code> 切換預先定義好的 CSS 樣式，而非直接寫死行內樣式（inline style）。</li>
+      </ul>
+    </section>
+
+    <!-- 區塊 3：程式碼範例區 -->
+    <section id="example" class="note-section">
+      <h2>2. 程式碼範例與解說</h2>
+      <p>以下示範一個「學習進度打卡按鈕」，點擊時會切換完成狀態樣式並即時更新計數器：</p>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-lang-group">
+            <div class="window-dots" aria-hidden="true">
+              <span></span><span></span><span></span>
+            </div>
+            <span>HTML / JavaScript</span>
+          </div>
+          <button type="button" class="copy-btn">複製程式碼</button>
+        </div>
+        <pre><code>&lt;!-- HTML 結構 --&gt;
+&lt;div class="task-box"&gt;
+  &lt;p id="status-text"&gt;目前狀態：尚未完成今日練習&lt;/p&gt;
+  &lt;p&gt;累計打卡次數：&lt;strong id="count-display"&gt;0&lt;/strong&gt;&lt;/p&gt;
+  &lt;button type="button" id="check-in-btn"&gt;完成今日學習打卡&lt;/button&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+  // 確保 HTML DOM 載入完成後再選取元素
+  document.addEventListener("DOMContentLoaded", () =&gt; {
+    const statusText = document.querySelector("#status-text");
+    const countDisplay = document.querySelector("#count-display");
+    const checkInBtn = document.querySelector("#check-in-btn");
+
+    let count = 0;
+
+    checkInBtn.addEventListener("click", () =&gt; {
+      count++;
+      // 切換 CSS class 控制外觀變化
+      const isCompleted = checkInBtn.classList.toggle("is-done");
+
+      // 使用 textContent 安全更新畫面文字
+      countDisplay.textContent = count;
+      statusText.textContent = isCompleted
+        ? "目前狀態：已完成今日練習！"
+        : "目前狀態：進行下一輪複習中";
+    });
+  });
+&lt;/script&gt;</code></pre>
+      </div>
+
+      <ul>
+        <li><strong><code>DOMContentLoaded</code> 事件</strong>：確保瀏覽器已經解析完所有 HTML 標籤後才執行 JavaScript，避免發生「找不到元素」的錯誤。</li>
+        <li><strong><code>classList.toggle()</code> 回傳值</strong>：切換後若該元素<strong>包含</strong>該 class 會回傳 <code>true</code>，移除則回傳 <code>false</code>，可直接用來判斷目前狀態。</li>
+      </ul>
+    </section>
+
+    <!-- 區塊 4：常見錯誤與注意事項 -->
+    <section id="pitfalls" class="note-section">
+      <h2>3. 常見錯誤與注意事項</h2>
+      <div class="callout-warning">
+        <span class="callout-warning-title">⚠️ 除錯與語法提醒</span>
+        <ul>
+          <li><strong><code>Cannot read properties of null</code> 錯誤</strong>：通常是因為 <code>&lt;script&gt;</code> 寫在 <code>&lt;head&gt;</code> 裡，導致程式執行時按鈕還沒被載入。請將 <code>&lt;script&gt;</code> 放在 <code>&lt;/body&gt;</code> 前，或包在 <code>DOMContentLoaded</code> 內。</li>
+          <li><strong>註冊監聽器時不小心加上括號 <code>()</code></strong>：寫成 <code>btn.addEventListener("click", handleClick())</code> 會在網頁載入當下就立刻執行函式，而非等到點擊時才觸發；正確寫法應傳入函式名稱 <code>handleClick</code>（不加括號）。</li>
+          <li><strong>避免濫用 <code>innerHTML</code> 寫入使用者輸入</strong>：若將未過濾的使用者輸入直接塞入 <code>innerHTML</code>，容易引發 XSS（跨站腳本攻擊）；單純顯示文字請一律使用 <code>textContent</code>。</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    © 2026 程式設計學習資料庫
+  </footer>
+
+  <script src="../assets/main.js"></script>
+</body>
+</html>

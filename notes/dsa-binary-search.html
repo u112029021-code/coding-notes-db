@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>二分搜尋法（Binary Search）原理與實作｜程式設計學習資料庫</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="../index.html" class="site-title">程式設計學習資料庫</a>
+      <span class="site-subtitle">系統化整理程式語言、演算法與開發實務筆記</span>
+    </div>
+  </header>
+
+  <main class="note-container">
+    <a href="../index.html" class="back-link">← 返回筆記總覽</a>
+
+    <!-- 區塊 1：標題資訊區 -->
+    <header class="note-header">
+      <div class="note-meta-row">
+        <span class="badge badge-dsa">資料結構與演算法</span>
+        <time datetime="2026-11-16">最後更新：2026-11-16</time>
+      </div>
+      <h1>二分搜尋法（Binary Search）原理與實作</h1>
+      <p class="note-summary">
+        理解 O(log n) 時間複雜度優勢，掌握在已排序陣列中利用左右雙指標縮小搜尋範圍的實作與邊界條件。
+      </p>
+    </header>
+
+    <!-- 區塊 2：觀念說明區 -->
+    <section id="concept" class="note-section">
+      <h2>1. 核心觀念說明</h2>
+      <p>
+        <strong>二分搜尋法（Binary Search）</strong>是一種建立在「分治法（Divide and Conquer）」概念上的高效搜尋演算法，每一次比較都能排除掉一半的不可能選項：
+      </p>
+      <ul>
+        <li><strong>必要前提條件</strong>：目標資料集合必須是<strong>「已排序（Sorted）」</strong>且支援隨機存取（如陣列 Array 或 Python List）。</li>
+        <li><strong>搜尋步驟</strong>：設定左邊界 <code>left</code> 與右邊界 <code>right</code>，每次取出中間位置 <code>mid</code> 的元素與目標值 <code>target</code> 比較。若相等則回傳索引；若中間值較小，代表目標只可能在右半部，將 <code>left</code> 移至 <code>mid + 1</code>；反之則將 <code>right</code> 移至 <code>mid - 1</code>。</li>
+        <li><strong>複雜度分析</strong>：時間複雜度為 <strong>O(log n)</strong>（例如在 100 萬筆資料中最多只需比較 20 次），遠快於線性搜尋的 O(n)；使用迴圈實作時的空間複雜度為 <strong>O(1)</strong>。</li>
+      </ul>
+    </section>
+
+    <!-- 區塊 3：程式碼範例區 -->
+    <section id="example" class="note-section">
+      <h2>2. 程式碼範例與解說</h2>
+      <p>以下使用迭代（Iterative）雙指標寫法，在遞增排序的整數陣列中尋找目標值 <code>target</code> 的索引位置：</p>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-lang-group">
+            <div class="window-dots" aria-hidden="true">
+              <span></span><span></span><span></span>
+            </div>
+            <span>Python</span>
+          </div>
+          <button type="button" class="copy-btn">複製程式碼</button>
+        </div>
+        <pre><code>def binary_search(nums: list[int], target: int) -&gt; int:
+    # 定義閉區間搜尋範圍 [left, right]
+    left = 0
+    right = len(nums) - 1
+
+    # 當 left == right 時區間內仍有一個元素，因此條件必須包含等號
+    while left &lt;= right:
+        # 避免其他語言中 (left + right) 發生整數溢位的標準寫法
+        mid = left + (right - left) // 2
+
+        if nums[mid] == target:
+            return mid          # 找到目標，回傳索引位置
+        elif nums[mid] &lt; target:
+            left = mid + 1      # 目標在右半邊，縮小左邊界
+        else:
+            right = mid - 1     # 目標在左半邊，縮小右邊界
+
+    return -1                   # 搜尋範圍清空仍未找到
+
+
+if __name__ == "__main__":
+    sorted_data = [3, 11, 18, 24, 37, 45, 59, 72, 88]
+    print("搜尋 45 的索引:", binary_search(sorted_data, 45))  # 輸出: 5
+    print("搜尋 20 的索引:", binary_search(sorted_data, 20))  # 輸出: -1</code></pre>
+      </div>
+
+      <ul>
+        <li><strong>閉區間不變量（Loop Invariant）</strong>：因為初始設定 <code>right = len(nums) - 1</code>，代表搜尋區間兩端都包含在內（<code>[left, right]</code>），所以迴圈條件必須寫 <code>left &lt;= right</code>，且邊界更新時要跳過已經檢查過的 <code>mid</code>（即 <code>mid + 1</code> 與 <code>mid - 1</code>）。</li>
+        <li><strong>防溢位中點公式</strong>：<code>mid = left + (right - left) // 2</code> 在數學上等同於 <code>(left + right) // 2</code>，但在 C++ 或 Java 等固定整數長度的語言中，能防止 <code>left + right</code> 超出 <code>INT_MAX</code>。</li>
+      </ul>
+    </section>
+
+    <!-- 區塊 4：常見錯誤與注意事項 -->
+    <section id="pitfalls" class="note-section">
+      <h2>3. 常見錯誤與注意事項</h2>
+      <div class="callout-warning">
+        <span class="callout-warning-title">⚠️ 除錯與語法提醒</span>
+        <ul>
+          <li><strong>對未排序的陣列直接使用二分搜尋</strong>：如果資料沒有先排序，二分搜尋會直接丟棄包含正確答案的那一半區間，回傳錯誤結果（若要先排序再搜尋，整體時間複雜度會變成 O(n log n)）。</li>
+          <li><strong>邊界更新未加 1 或減 1 導致無窮迴圈</strong>：若誤寫成 <code>left = mid</code> 或 <code>right = mid</code>，當搜尋範圍縮小到只剩 2 個元素且目標不存在時，<code>mid</code> 會卡在原地導致 <code>while</code> 迴圈永遠無法結束。</li>
+          <li><strong>迴圈條件漏掉等號 <code>=</code></strong>：在閉區間寫法中若寫成 <code>while left &lt; right:</code>，當目標剛好位於最後剩下的那個元素時，迴圈會提前結束並誤判為找不到（<code>-1</code>）。</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    © 2026 程式設計學習資料庫
+  </footer>
+
+  <script src="../assets/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SQL 關聯查詢（INNER JOIN 與 LEFT JOIN）實務｜程式設計學習資料庫</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="../index.html" class="site-title">程式設計學習資料庫</a>
+      <span class="site-subtitle">系統化整理程式語言、演算法與開發實務筆記</span>
+    </div>
+  </header>
+
+  <main class="note-container">
+    <a href="../index.html" class="back-link">← 返回筆記總覽</a>
+
+    <!-- 區塊 1：標題資訊區 -->
+    <header class="note-header">
+      <div class="note-meta-row">
+        <span class="badge badge-db">資料庫</span>
+        <time datetime="2026-11-16">最後更新：2026-11-16</time>
+      </div>
+      <h1>SQL 關聯查詢（INNER JOIN 與 LEFT JOIN）實務</h1>
+      <p class="note-summary">
+        透過資料表關聯範例比較交集查詢與左外部聯結的差異，學會正確處理 NULL 值與避免資料列倍增。
+      </p>
+    </header>
+
+    <!-- 區塊 2：觀念說明區 -->
+    <section id="concept" class="note-section">
+      <h2>1. 核心觀念說明</h2>
+      <p>
+        在關聯式資料庫（如 MySQL、PostgreSQL）中，為了避免資料重複儲存，我們會將不同主題拆分成多張資料表，並透過<strong>主鍵（Primary Key）</strong>與<strong>外來鍵（Foreign Key）</strong>建立關聯：
+      </p>
+      <ul>
+        <li><strong><code>INNER JOIN</code>（內部聯結 / 交集）</strong>：只會回傳左右兩張資料表中，<code>ON</code> 關聯條件<strong>完全符合</strong>的資料列；任何一邊找不到對應紀錄的資料都會被排除。</li>
+        <li><strong><code>LEFT JOIN</code>（左外部聯結）</strong>：以 <code>FROM</code> 後方的左表為主，<strong>保留左表的所有資料列</strong>；若右表沒有符合的關聯紀錄，右表欄位會自動以 <code>NULL</code> 填補。</li>
+        <li><strong>查詢未關聯資料的技巧</strong>：結合 <code>LEFT JOIN</code> 與 <code>WHERE 右表.主鍵 IS NULL</code>，可快速找出「尚未選課的學生」或「尚無訂單的會員」。</li>
+      </ul>
+    </section>
+
+    <!-- 區塊 3：程式碼範例區 -->
+    <section id="example" class="note-section">
+      <h2>2. 程式碼範例與解說</h2>
+      <p>假設有學生資料表 <code>Students (student_id, name)</code> 與選課紀錄表 <code>Enrollments (enroll_id, student_id, course_name)</code>：</p>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-lang-group">
+            <div class="window-dots" aria-hidden="true">
+              <span></span><span></span><span></span>
+            </div>
+            <span>SQL</span>
+          </div>
+          <button type="button" class="copy-btn">複製程式碼</button>
+        </div>
+        <pre><code>-- 範例 1：INNER JOIN（只列出「有選課」的學生與課程名稱）
+SELECT
+    s.student_id,
+    s.name,
+    e.course_name
+FROM Students AS s
+INNER JOIN Enrollments AS e
+    ON s.student_id = e.student_id;
+
+-- 範例 2：LEFT JOIN（列出「所有學生」，未選課者課程欄位顯示為 NULL）
+SELECT
+    s.student_id,
+    s.name,
+    COALESCE(e.course_name, '尚未選課') AS course_status
+FROM Students AS s
+LEFT JOIN Enrollments AS e
+    ON s.student_id = e.student_id;
+
+-- 範例 3：找出「完全沒有選修任何課程」的學生名單
+SELECT
+    s.student_id,
+    s.name
+FROM Students AS s
+LEFT JOIN Enrollments AS e
+    ON s.student_id = e.student_id
+WHERE e.enroll_id IS NULL;</code></pre>
+      </div>
+
+      <ul>
+        <li><strong>資料表別名（Alias）</strong>：使用 <code>Students AS s</code> 與 <code>Enrollments AS e</code> 縮短查詢語句，並明確標示欄位來源（如 <code>s.student_id</code>）。</li>
+        <li><strong><code>COALESCE()</code> 函式</strong>：在範例 2 中將原本顯示為 <code>NULL</code> 的欄位轉換成可讀性更高的提示文字 <code>'尚未選課'</code>。</li>
+      </ul>
+    </section>
+
+    <!-- 區塊 4：常見錯誤與注意事項 -->
+    <section id="pitfalls" class="note-section">
+      <h2>3. 常見錯誤與注意事項</h2>
+      <div class="callout-warning">
+        <span class="callout-warning-title">⚠️ 除錯與語法提醒</span>
+        <ul>
+          <li><strong>在 <code>LEFT JOIN</code> 後用 <code>WHERE</code> 過濾右表欄位</strong>：若寫成 <code>LEFT JOIN Enrollments e ON ... WHERE e.course_name = '資料庫系統'</code>，原本右表為 <code>NULL</code> 的資料列會全部被 <code>WHERE</code> 濾掉，導致 <code>LEFT JOIN</code> 退化成 <code>INNER JOIN</code>。若要保留左表全部資料，應把右表過濾條件放進 <code>ON</code> 子句中。</li>
+          <li><strong>欄位名稱模糊（Ambiguous Column Name）</strong>：兩張表都有 <code>student_id</code> 時，若在 <code>SELECT</code> 只寫 <code>student_id</code> 而不加別名前綴（<code>s.student_id</code>），資料庫會直接報錯。</li>
+          <li><strong>一對多關聯導致資料列倍增</strong>：若一位學生選了 3 門課，<code>JOIN</code> 後該名學生會出現 3 列；此時若直接用 <code>COUNT(*)</code> 計算學生人數會重複計算，應改用 <code>COUNT(DISTINCT s.student_id)</code>。</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    © 2026 程式設計學習資料庫
+  </footer>
+
+  <script src="../assets/main.js"></script>
+</body>
+</html>

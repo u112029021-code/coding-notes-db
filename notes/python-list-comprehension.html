@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Python 串列生成式與常用容器操作｜程式設計學習資料庫</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="../index.html" class="site-title">程式設計學習資料庫</a>
+      <span class="site-subtitle">系統化整理程式語言、演算法與開發實務筆記</span>
+    </div>
+  </header>
+
+  <main class="note-container">
+    <a href="../index.html" class="back-link">← 返回筆記總覽</a>
+
+    <!-- 區塊 1：標題資訊區 -->
+    <header class="note-header">
+      <div class="note-meta-row">
+        <span class="badge badge-python">Python</span>
+        <time datetime="2026-11-16">最後更新：2026-11-16</time>
+      </div>
+      <h1>Python 串列生成式與常用容器操作</h1>
+      <p class="note-summary">
+        掌握 list、set 與 dict 的核心差異，並運用簡潔的生成式（Comprehension）語法高效率完成資料篩選與轉換。
+      </p>
+    </header>
+
+    <!-- 區塊 2：觀念說明區 -->
+    <section id="concept" class="note-section">
+      <h2>1. 核心觀念說明</h2>
+      <p>
+        在 Python 處理資料集合時，選對內建容器並搭配生成式語法，能大幅減少冗長的 <code>for</code> 迴圈與暫存變數：
+      </p>
+      <ul>
+        <li><strong>三大常用容器特性</strong>：<code>list</code>（串列）有序且允許重複元素；<code>set</code>（集合）無序且自動去除重複值，查詢速度為 O(1)；<code>dict</code>（字典）以「鍵值對（Key-Value）」儲存資料，適合快速對應查詢。</li>
+        <li><strong>串列生成式（List Comprehension）</strong>：基本語法為 <code>[運算式 for 變數 in 可迭代物件 if 篩選條件]</code>，可將「走訪、過濾、轉換」濃縮為單行且具備高度可讀性的程式碼。</li>
+        <li><strong>集合與字典生成式</strong>：將外層中括號 <code>[]</code> 改為大括號 <code>{}</code>，即可直接生成去重複的 <code>set</code> 或鍵值對 <code>dict</code>。</li>
+      </ul>
+    </section>
+
+    <!-- 區塊 3：程式碼範例區 -->
+    <section id="example" class="note-section">
+      <h2>2. 程式碼範例與解說</h2>
+      <p>以下示範如何對一組學生成績資料進行及格篩選、加分轉換、去除重複標籤以及建立成績查詢字典：</p>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-lang-group">
+            <div class="window-dots" aria-hidden="true">
+              <span></span><span></span><span></span>
+            </div>
+            <span>Python</span>
+          </div>
+          <button type="button" class="copy-btn">複製程式碼</button>
+        </div>
+        <pre><code># 原始資料：(學生姓名, 原始分數, 修課組別)
+records = [
+    ("Alice", 85, "AI"),
+    ("Bob", 54, "Web"),
+    ("Charlie", 92, "AI"),
+    ("David", 58, "DB"),
+    ("Eva", 76, "Web")
+]
+
+# 1. 串列生成式：篩選及格（>= 60 分）的學生姓名
+passed_students = [name for name, score, _ in records if score &gt;= 60]
+print("及格名單:", passed_students)
+
+# 2. 串列生成式（含三元運算子）：未滿 60 分者補考調整為 60 分，其餘加 5 分（上限 100）
+adjusted_scores = [
+    min(score + 5, 100) if score &gt;= 60 else 60
+    for _, score, _ in records
+]
+print("調整後分數:", adjusted_scores)
+
+# 3. 集合生成式（Set Comprehension）：取得不重複的修課組別
+unique_tracks = {track for _, _, track in records}
+print("所有組別:", unique_tracks)
+
+# 4. 字典生成式（Dict Comprehension）：建立「姓名 -> 原始分數」對照表
+score_map = {name: score for name, score, _ in records}
+print("Charlie 的分數:", score_map["Charlie"])</code></pre>
+      </div>
+
+      <ul>
+        <li><strong>序列解包（Unpacking）</strong>：在 <code>for name, score, _ in records</code> 中，使用底線 <code>_</code> 代表該迴圈暫時不需要用到的欄位，讓語意更清晰。</li>
+        <li><strong>條件位置差異</strong>：單純「過濾元素」時，<code>if</code> 寫在 <code>for</code> 的後方；若要根據條件「決定轉換後的值（<code>if ... else ...</code>）」，條件式則必須寫在 <code>for</code> 的前方。</li>
+      </ul>
+    </section>
+
+    <!-- 區塊 4：常見錯誤與注意事項 -->
+    <section id="pitfalls" class="note-section">
+      <h2>3. 常見錯誤與注意事項</h2>
+      <div class="callout-warning">
+        <span class="callout-warning-title">⚠️ 除錯與語法提醒</span>
+        <ul>
+          <li><strong>過度巢狀導致可讀性下降</strong>：當生成式包含兩層以上的 <code>for</code> 迴圈與多重 <code>if</code> 判斷時，應改回傳統縮排的 <code>for</code> 迴圈，避免寫出難以維護的「一行天書」。</li>
+          <li><strong>誤用小括號 <code>()</code> 產生生成器</strong>：寫成 <code>(x * 2 for x in nums)</code> 建立的是「生成器（Generator Expression）」而非 <code>tuple</code>，只能逐一迭代一次，無法用索引 <code>[0]</code> 存取。</li>
+          <li><strong>字典鍵值（Key）重複覆蓋</strong>：使用字典生成式時，若原始資料出現相同的 Key，後出現的資料會直接覆蓋先前的值，需確認鍵值具備唯一性。</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    © 2026 程式設計學習資料庫
+  </footer>
+
+  <script src="../assets/main.js"></script>
+</body>
+</html>
